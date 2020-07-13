@@ -9,27 +9,14 @@ class Mutations {
   ) {
     return """
       mutation{
-        register(name: "$name", email: "$email", username: "$username", password: "$password"){
-          name
-          email
-          username
-          password
-        }
-      }
-    """;
-  }
-
-  String newPost(
-    String title,
-    String text,
-    String token,
-  ) {
-    return """
-      mutation{
-        register(title: "$title", text: "$text", token: "$token"){
-          title
-          text
-          token
+        register(
+          name: "$name", 
+          email: "$email", 
+          username: "$username", 
+          password: "$password")
+        {
+          token,
+          error
         }
       }
     """;
@@ -42,10 +29,13 @@ class Mutations {
   ) {
     return """
       mutation{
-        register(email: "$email", username: "$username", password: "$password"){
-          email
-          username
-          password
+        register(
+          email: "$email", 
+          username: "$username", 
+          password: "$password")
+        {
+          token,
+          error
         }
       }
     """;

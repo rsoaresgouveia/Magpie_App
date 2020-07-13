@@ -10,12 +10,15 @@ import './registerUser.dart';
 import './postsList.dart';
 
 GraphQLConf graphQLConfiguration = GraphQLConf();
-void main() => runApp(
-      GraphQLProvider(
-        client: graphQLConfiguration.client,
-        child: CacheProvider(child: MyApp()),
-      ),
-    );
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    GraphQLProvider(
+      client: graphQLConfiguration.client,
+      child: CacheProvider(child: MyApp()),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   @override

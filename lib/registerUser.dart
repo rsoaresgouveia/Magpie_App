@@ -87,10 +87,12 @@ class _RegisterUserState extends State<RegisterUser> {
         print('dentro do if \'checkUser\'');
         QueryResult result = await _client.mutate(
           MutationOptions(
-            document: mutation.registerUser(name, email, user, password),
+            documentNode:
+                gql(mutation.registerUser(name, email, user, password)),
           ),
         );
         print('user registrado com sucesso');
+        print(result.data);
         setState(
           () {
             //não tem um registro com este token
@@ -98,7 +100,7 @@ class _RegisterUserState extends State<RegisterUser> {
           },
         );
 
-        if (!result.hasException) {
+        if (result.hasException) {
           print('exception caught');
           creteAlertDialog(context);
         }
@@ -120,6 +122,7 @@ class _RegisterUserState extends State<RegisterUser> {
       );
       print('Campos estão vazios');
     }
+    print('pass through all Ifs and should be disposed');
     Navigator.pop(context);
   }
 
@@ -132,74 +135,76 @@ class _RegisterUserState extends State<RegisterUser> {
                 child: Text('Registro de Usuário'),
               ),
             ),
-            body: Column(
-              children: <Widget>[
-                Container(
-                  height: 450,
-                  padding: EdgeInsets.all(30),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        TextField(
-                          controller: nameCtrl,
-                          keyboardType: TextInputType.text,
-                          decoration:
-                              InputDecoration(labelText: 'Digite seu nome'),
-                        ),
-                        TextField(
-                          controller: emailCtrl,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration:
-                              InputDecoration(labelText: 'Digite seu email'),
-                        ),
-                        TextField(
-                          controller: userCtrl,
-                          decoration:
-                              InputDecoration(labelText: 'Digite seu usuário'),
-                        ),
-                        TextField(
-                          controller: psswCtrl,
-                          obscureText: true,
-                          decoration:
-                              InputDecoration(labelText: 'Digite sua senha'),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            FlatButton(
-                              onPressed: () => {
-                                //checkUser(nameCtrl.text),
-                                addUser(nameCtrl.text, emailCtrl.text,
-                                    userCtrl.text, psswCtrl.text),
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Container(
-                                      margin: EdgeInsets.all(10),
-                                      child: Text('Cadastrar')),
-                                  Icon(Icons.person_add)
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
+            body: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    height: 450,
+                    padding: EdgeInsets.all(30),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          TextField(
+                            controller: nameCtrl,
+                            keyboardType: TextInputType.text,
+                            decoration:
+                                InputDecoration(labelText: 'Digite seu nome'),
+                          ),
+                          TextField(
+                            controller: emailCtrl,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration:
+                                InputDecoration(labelText: 'Digite seu email'),
+                          ),
+                          TextField(
+                            controller: userCtrl,
+                            decoration: InputDecoration(
+                                labelText: 'Digite seu usuário'),
+                          ),
+                          TextField(
+                            controller: psswCtrl,
+                            obscureText: true,
+                            decoration:
+                                InputDecoration(labelText: 'Digite sua senha'),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              FlatButton(
+                                onPressed: () => {
+                                  //checkUser(nameCtrl.text),
+                                  addUser(nameCtrl.text, emailCtrl.text,
+                                      userCtrl.text, psswCtrl.text),
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Container(
+                                        margin: EdgeInsets.all(10),
+                                        child: Text('Cadastrar')),
+                                    Icon(Icons.person_add)
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                if (fieldsEmpty)
-                  Center(
-                    child: Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.all(60),
-                      child: Text(
-                          'Campos vazios! Por favor preencha todos os campos para adicionar o usuário'),
-                    ),
-                  )
-              ],
+                  if (fieldsEmpty)
+                    Center(
+                      child: Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.all(60),
+                        child: Text(
+                            'Campos vazios! Por favor preencha todos os campos para adicionar o usuário'),
+                      ),
+                    )
+                ],
+              ),
             ),
           )
         : CupertinoPageScaffold(
