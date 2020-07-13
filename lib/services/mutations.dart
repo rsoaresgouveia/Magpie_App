@@ -29,13 +29,12 @@ class Mutations {
   ) {
     return """
       mutation{
-        register(
+        login(
           email: "$email", 
           username: "$username", 
           password: "$password")
         {
-          token,
-          error
+          token
         }
       }
     """;

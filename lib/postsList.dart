@@ -10,6 +10,8 @@ import './services/mutations.dart';
 import './services/queries.dart';
 
 class PostsList extends StatefulWidget {
+  final String arguments;
+  PostsList({Key key, this.arguments}) : super(key: key);
   @override
   _PostsListState createState() => _PostsListState();
 }
@@ -17,10 +19,24 @@ class PostsList extends StatefulWidget {
 class _PostsListState extends State<PostsList> {
   Queries queries = Queries();
   GraphQLClient _client = graphQLConfiguration.clientToQuery();
+  //String userToken = onGenerated
   // QueryResult result = await _client.query(QueryOptions(
   //   documentNode: gql(queries.getMe(name)),
   // ));
+
+  Future<QueryResult> userResult;
+
+  Future<QueryResult> callUser(token) async {
+    Queries queries = Queries();
+    GraphQLClient _client = graphQLConfiguration.clientToQuery();
+    QueryResult result = await _client.query(QueryOptions(
+      documentNode: gql(queries.getMe(token)),
+    ));
+    return result;
+  }
+
   int testButton() {
+    print(widget.arguments);
     return 1;
   }
 
