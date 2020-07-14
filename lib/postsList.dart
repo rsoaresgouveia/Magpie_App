@@ -18,22 +18,10 @@ class PostsList extends StatefulWidget {
 }
 
 class _PostsListState extends State<PostsList> {
-  //QueryResult postListResult;
   String sucess = '';
   bool error = false;
   ScrollController scrC = ScrollController();
   Queries queries = Queries();
-
-  // Future<QueryResult> getPosts(token) async {
-  //   GraphQLClient _client = graphQLConfiguration.clientToQuery();
-  //   postListResult = await _client.query(
-  //     QueryOptions(
-  //       documentNode: gql(queries.getPosts()),
-  //     ),
-  //   );
-
-  //   return postListResult as QueryResult;
-  // }
 
   void addPost(TextEditingController title, TextEditingController text,
       String token) async {
@@ -64,47 +52,47 @@ class _PostsListState extends State<PostsList> {
     Platform.isAndroid
         ? showMaterialModalBottomSheet(
             context: context,
-            builder: (context, scrollController) => Container(
-              height: 250,
-              padding: EdgeInsets.all(10),
-              child: Column(children: <Widget>[
-                Container(
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(230, 230, 230, 1),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20),
+            builder: (context, scrollController) => SingleChildScrollView(
+              child: Container(
+                height: 350,
+                padding: EdgeInsets.all(10),
+                child: Column(children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(20),
+                      ),
+                    ),
+                    child: TextField(
+                      maxLines: 1,
+                      controller: titleC,
+                      decoration: InputDecoration(
+                        labelText: 'Titulo da postagem',
+                      ),
                     ),
                   ),
-                  child: TextField(
-                    maxLines: 1,
-                    controller: titleC,
-                    decoration: InputDecoration(
-                      labelText: 'Titulo da postagem',
+                  Container(
+                    height: 5,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    child: TextField(
+                      maxLines: 1,
+                      controller: textC,
+                      decoration: InputDecoration(
+                        labelText: 'Postagem',
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  height: 5,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: Color.fromRGBO(230, 230, 230, 1),
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
-                  child: TextField(
-                    maxLines: 5,
-                    controller: textC,
-                    decoration: InputDecoration(
-                      labelText: 'Postagem',
-                    ),
+                  FlatButton(
+                    onPressed: () => {
+                      addPost(titleC, textC, widget.arguments),
+                    },
+                    child: Text('Add Postagem'),
                   ),
-                ),
-                FlatButton(
-                  onPressed: () => {
-                    addPost(titleC, textC, widget.arguments),
-                  },
-                  child: Text('Add Postagem'),
-                ),
-              ]),
+                ]),
+              ),
             ),
           )
         : showCupertinoModalBottomSheet(
@@ -190,7 +178,7 @@ class _PostsListState extends State<PostsList> {
                 floatingActionButton: FloatingActionButton(
                   elevation: 5,
                   child: Icon(Icons.add),
-                  onPressed: () => 1,
+                  onPressed: () => _addNewPost(context),
                 ),
                 body: result.hasException
                     ? Text(
@@ -198,54 +186,78 @@ class _PostsListState extends State<PostsList> {
                       )
                     : result.loading
                         ? CircularProgressIndicator()
-                        : ListView.builder(
-                            controller: scrC,
-                            itemCount:
-                                (result.data['posts'] as List<Object>).length,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                padding: EdgeInsets.all(1),
-                                child: Card(
-                                  color: Color.fromRGBO(240, 240, 240, 1),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Row(
+                        : Stack(
+                            children: <Widget>[
+                              ListView.builder(
+                                controller: scrC,
+                                itemCount:
+                                    (result.data['posts'] as List<Object>)
+                                        .length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    padding: EdgeInsets.all(1),
+                                    child: Card(
+                                      color: Color.fromRGBO(240, 240, 240, 1),
+                                      child: Column(
                                         children: <Widget>[
-                                          Text(
-                                            '@' +
-                                                result.data['posts'][index]
-                                                    ['author']['username'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
+                                          Row(
+                                            children: <Widget>[
+                                              Text(
+                                                '@' +
+                                                    result.data['posts'][index]
+                                                        ['author']['username'],
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                ' - ' +
+                                                    result.data['posts'][index]
+                                                        ['author']['name'],
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )
+                                            ],
                                           ),
                                           Text(
-                                            ' - ' +
-                                                result.data['posts'][index]
-                                                    ['author']['name'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          )
+                                            result.data['posts'][index]
+                                                ['title'],
+                                          ),
+                                          Text(
+                                            result.data['posts'][index]['text'],
+                                          ),
+                                          Text('\n'),
+                                          Text(
+                                            result.data['posts'][index]
+                                                ['createdAt'],
+                                          ),
                                         ],
                                       ),
-                                      Text(
-                                        result.data['posts'][index]['title'],
-                                      ),
-                                      Text(
-                                        result.data['posts'][index]['text'],
-                                      ),
-                                      Text('\n'),
-                                      Text(
-                                        result.data['posts'][index]
-                                            ['createdAt'],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                                    ),
+                                  );
+                                },
+                              ),
+                              if (sucess == 'Sucesso')
+                                AlertDialog(
+                                  content:
+                                      Text('Postagem adicionada Com Sucesso'),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text('Ok'),
+                                      onPressed: () => {
+                                        _stateDialog(),
+                                        refetch(),
+                                        fetchMore,
+                                      },
+                                    )
+                                  ],
+                                )
+                            ],
                           ),
               );
-            })
+            },
+          )
         : Query(
             options: QueryOptions(
               documentNode: gql(
