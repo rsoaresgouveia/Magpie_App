@@ -49,9 +49,11 @@ class _RegisterUserState extends State<RegisterUser> {
   void checkUser(String name) async {
     Queries queries = Queries();
     GraphQLClient _client = graphQLConfiguration.clientToQuery();
-    QueryResult result = await _client.query(QueryOptions(
-      document: queries.getMe(name),
-    ));
+    QueryResult result = await _client.query(
+      QueryOptions(
+        documentNode: gql(queries.getMe(name)),
+      ),
+    );
     print(result);
     if (result.data) {
       setState(
@@ -216,66 +218,68 @@ class _RegisterUserState extends State<RegisterUser> {
             child: Container(
               height: 400,
               padding: EdgeInsets.all(30),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    height: 45,
-                    child: CupertinoTextField(
-                      controller: nameCtrl,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Container(
+                      height: 45,
+                      child: CupertinoTextField(
+                        controller: nameCtrl,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                        placeholder: 'Digite seu nome',
                       ),
-                      placeholder: 'Digite seu nome',
                     ),
-                  ),
-                  Container(
-                    height: 45,
-                    child: CupertinoTextField(
-                      controller: emailCtrl,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                    Container(
+                      height: 45,
+                      child: CupertinoTextField(
+                        controller: emailCtrl,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        placeholder: 'Digite seu e-mail',
                       ),
-                      placeholder: 'Digite seu e-mail',
                     ),
-                  ),
-                  Container(
-                    height: 45,
-                    child: CupertinoTextField(
-                      controller: userCtrl,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(1)),
+                    Container(
+                      height: 45,
+                      child: CupertinoTextField(
+                        controller: userCtrl,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(1)),
+                        ),
+                        placeholder: 'Digite seu usuário',
                       ),
-                      placeholder: 'Digite seu usuário',
                     ),
-                  ),
-                  Container(
-                    height: 45,
-                    child: CupertinoTextField(
-                      controller: psswCtrl,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                    Container(
+                      height: 45,
+                      child: CupertinoTextField(
+                        controller: psswCtrl,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                        placeholder: 'Digite sua senha',
                       ),
-                      placeholder: 'Digite sua senha',
                     ),
-                  ),
-                  Center(
-                    child: CupertinoButton(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                              margin: EdgeInsets.all(10),
-                              child: Text('Cadastrar')),
-                          Icon(CupertinoIcons.person_add)
-                        ],
+                    Center(
+                      child: CupertinoButton(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                                margin: EdgeInsets.all(10),
+                                child: Text('Cadastrar')),
+                            Icon(CupertinoIcons.person_add)
+                          ],
+                        ),
+                        onPressed: () => //checkUser(nameCtrl.text),
+                            addUser(nameCtrl.text, emailCtrl.text,
+                                userCtrl.text, psswCtrl.text),
                       ),
-                      onPressed: () => //checkUser(nameCtrl.text),
-                          addUser(nameCtrl.text, emailCtrl.text, userCtrl.text,
-                              psswCtrl.text),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
           );

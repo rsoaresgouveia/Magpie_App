@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:magpie_App/main.dart';
-import './services/graphQLConf.dart';
-import './services/mutations.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import './services/queries.dart';
+import './services/mutations.dart';
+import './main.dart';
+import './models/posts.dart';
 
 class PostsList extends StatefulWidget {
   final String arguments;
@@ -17,133 +18,293 @@ class PostsList extends StatefulWidget {
 }
 
 class _PostsListState extends State<PostsList> {
+  //QueryResult postListResult;
+  String sucess = '';
+  bool error = false;
+  ScrollController scrC = ScrollController();
   Queries queries = Queries();
-  GraphQLClient _client = graphQLConfiguration.clientToQuery();
-  //String userToken = onGenerated
-  // QueryResult result = await _client.query(QueryOptions(
-  //   documentNode: gql(queries.getMe(name)),
-  // ));
 
-  Future<QueryResult> userResult;
+  // Future<QueryResult> getPosts(token) async {
+  //   GraphQLClient _client = graphQLConfiguration.clientToQuery();
+  //   postListResult = await _client.query(
+  //     QueryOptions(
+  //       documentNode: gql(queries.getPosts()),
+  //     ),
+  //   );
 
-  Future<QueryResult> callUser(token) async {
-    Queries queries = Queries();
-    GraphQLClient _client = graphQLConfiguration.clientToQuery();
-    QueryResult result = await _client.query(QueryOptions(
-      documentNode: gql(queries.getMe(token)),
-    ));
-    return result;
+  //   return postListResult as QueryResult;
+  // }
+
+  void addPost(TextEditingController title, TextEditingController text,
+      String token) async {
+    Mutations mutation = Mutations();
+    GraphQLClient _clientMutation = graphQLConfiguration.clientToQuery();
+    if (title.text.isNotEmpty && text.text.isNotEmpty) {
+      QueryResult result = await _clientMutation.mutate(
+        MutationOptions(
+          documentNode: gql(mutation.newPost(title.text, text.text, token)),
+        ),
+      );
+      title.clear();
+      text.clear();
+      setState(() {
+        sucess = 'Sucesso';
+      });
+      Navigator.of(context).pop();
+    } else {
+      setState(() {
+        error = true;
+      });
+    }
   }
 
-  int testButton() {
-    print(widget.arguments);
-    return 1;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Platform.isAndroid
-        ? Scaffold(
-            appBar: AppBar(
-              title: Center(
-                child: Text('Feed'),
-              ),
-            ),
-            floatingActionButton: FloatingActionButton(
-                elevation: 5, child: Icon(Icons.add), onPressed: null),
-            body: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Olá user:',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '<data>',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                    // child: ListView.builder(
-                    //   itemBuilder: (context, index) {
-                    //     return Card(
-                    //       margin: EdgeInsets.all(5),
-                    //       child: Row(
-                    //         children: <Widget>[
-                    //           ListTile(
-                    //             //isThreeLine: true,
-                    //             title: Text('≤User≥'),
-                    //             subtitle: Text('Text of posts'),
-                    //             trailing: Text('date of the post'),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
-                    )
-              ],
-            ),
+  void _addNewPost(BuildContext ctx) {
+    TextEditingController titleC = TextEditingController();
+    TextEditingController textC = TextEditingController();
+    Platform.isAndroid
+        ? showMaterialModalBottomSheet(
+            context: context,
+            builder: (context, scrollController) => Container(),
           )
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              middle: Text('Feed'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
+        : showCupertinoModalBottomSheet(
+            context: ctx,
+            builder: (context, scrollController) => Container(
+              height: 250,
+              padding: EdgeInsets.all(10),
+              child: Column(
                 children: <Widget>[
-                  GestureDetector(
-                    child: Icon(CupertinoIcons.add),
-                    onTap: () => 1,
-                  )
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Color.fromRGBO(230, 230, 230, 1),
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    child: CupertinoTextField(
+                      maxLines: 1,
+                      controller: titleC,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                      ),
+                      placeholder: 'Titulo da postagem',
+                    ),
+                  ),
+                  Container(
+                    height: 5,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Color.fromRGBO(230, 230, 230, 1),
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    child: CupertinoTextField(
+                      maxLines: 5,
+                      controller: textC,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                      ),
+                      placeholder: 'Postagem',
+                    ),
+                  ),
+                  CupertinoButton(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                              margin: EdgeInsets.all(10),
+                              child: Text('Add Postagem')),
+                          Icon(CupertinoIcons.check_mark_circled),
+                        ],
+                      ),
+                      onPressed: () => {
+                            addPost(titleC, textC, widget.arguments),
+                            //onRefresh(),
+                          }),
                 ],
               ),
             ),
-            resizeToAvoidBottomInset: true,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+          );
+  }
+
+  void _stateDialog() {
+    setState(() {
+      sucess = '';
+    });
+  }
+
+  VoidCallback refetchQuery;
+  @override
+  Widget build(BuildContext context) {
+    return Platform.isAndroid
+        ? Query(
+            options: QueryOptions(
+              documentNode: gql(
+                queries.getPosts(),
+              ),
+            ),
+            builder: (QueryResult result,
+                {VoidCallback refetch, FetchMore fetchMore}) {
+              refetchQuery = refetch;
+              return Scaffold(
+                appBar: AppBar(
+                  title: Center(
+                    child: Text('Feed'),
+                  ),
+                ),
+                floatingActionButton: FloatingActionButton(
+                  elevation: 5,
+                  child: Icon(Icons.add),
+                  onPressed: () => 1,
+                ),
+                body: result.hasException
+                    ? Text(
+                        result.exception.toString(),
+                      )
+                    : result.loading
+                        ? CircularProgressIndicator()
+                        : ListView.builder(
+                            controller: scrC,
+                            itemCount:
+                                (result.data['posts'] as List<Object>).length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                padding: EdgeInsets.all(1),
+                                child: Card(
+                                  color: Color.fromRGBO(240, 240, 240, 1),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Row(
+                                        children: <Widget>[
+                                          Text(
+                                            '@' +
+                                                result.data['posts'][index]
+                                                    ['author']['username'],
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            ' - ' +
+                                                result.data['posts'][index]
+                                                    ['author']['name'],
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ],
+                                      ),
+                                      Text(
+                                        result.data['posts'][index]['title'],
+                                      ),
+                                      Text(
+                                        result.data['posts'][index]['text'],
+                                      ),
+                                      Text('\n'),
+                                      Text(
+                                        result.data['posts'][index]
+                                            ['createdAt'],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+              );
+            })
+        : Query(
+            options: QueryOptions(
+              documentNode: gql(
+                queries.getPosts(),
+              ),
+            ),
+            builder: (QueryResult result,
+                {VoidCallback refetch, FetchMore fetchMore}) {
+              return CupertinoPageScaffold(
+                navigationBar: CupertinoNavigationBar(
+                  middle: Text('Feed'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(
-                        'Olá user:',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '<data>',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
+                      GestureDetector(
+                        child: Icon(CupertinoIcons.add),
+                        onTap: () => _addNewPost(context),
+                      )
                     ],
                   ),
                 ),
-                Container(
-                    //   child: ListView.builder(
-                    //     itemBuilder: (context, index) {
-                    //       return Card(
-                    //         margin: EdgeInsets.all(5),
-                    //         child: ListTile(
-                    //           isThreeLine: true,
-                    //           title: Text('≤User≥'),
-                    //           subtitle: Text('Text of posts'),
-                    //           trailing: Text('date of the post'),
-                    //         ),
-                    //       );
-                    //     },
-                    //   ),
-                    )
-              ],
-            ),
+                resizeToAvoidBottomInset: true,
+                child: result.hasException
+                    ? Text(
+                        result.exception.toString(),
+                      )
+                    : result.loading
+                        ? CircularProgressIndicator()
+                        : Stack(
+                            children: <Widget>[
+                              ListView.builder(
+                                controller: scrC,
+                                itemCount:
+                                    (result.data['posts'] as List<Object>)
+                                        .length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    padding: EdgeInsets.all(1),
+                                    child: Card(
+                                      color: Color.fromRGBO(240, 240, 240, 1),
+                                      child: Column(
+                                        children: <Widget>[
+                                          Row(
+                                            children: <Widget>[
+                                              Text(
+                                                '@' +
+                                                    result.data['posts'][index]
+                                                        ['author']['username'],
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                ' - ' +
+                                                    result.data['posts'][index]
+                                                        ['author']['name'],
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )
+                                            ],
+                                          ),
+                                          Text(
+                                            result.data['posts'][index]
+                                                ['title'],
+                                          ),
+                                          Text(
+                                            result.data['posts'][index]['text'],
+                                          ),
+                                          Text('\n'),
+                                          Text(
+                                            result.data['posts'][index]
+                                                ['createdAt'],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              if (sucess == 'Sucesso')
+                                CupertinoAlertDialog(
+                                  content:
+                                      Text('Postagem adicionada Com Sucesso'),
+                                  actions: <Widget>[
+                                    CupertinoButton(
+                                      child: Text('Ok'),
+                                      onPressed: () => {
+                                        _stateDialog(),
+                                        refetch(),
+                                        fetchMore,
+                                      },
+                                    )
+                                  ],
+                                )
+                            ],
+                          ),
+              );
+            },
           );
   }
 }

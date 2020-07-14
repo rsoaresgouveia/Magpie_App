@@ -39,11 +39,45 @@ class Mutations {
       }
     """;
   }
+
+  String newPost(
+    String title,
+    String text,
+    String token,
+  ) {
+    return """
+      mutation{
+        newPost(
+          title:"$title",
+          text: "$text",
+          token: "$token"
+        ){
+          post{
+            id: id,
+            title: title,
+            text: text,
+            author: author{
+              name: name,
+              id:id,
+              email: email,
+              username: username,
+              token: token,
+            },
+            
+          }
+          error,
+        }
+      }
+    """;
+  }
 }
 
-// register(
-// name: String!
-// email: String!
-// username: String!
-// password: String!
-// ): AuthResponse
+/*
+
+
+
+
+
+
+
+*/

@@ -14,7 +14,7 @@ class Queries {
   }
 
   String getPosts() {
-    return """"
+    return """
       query{
         posts(authorEmail: ""){
           id: id,
@@ -25,7 +25,6 @@ class Queries {
               name: name,
               email: email,
               username: username,
-              token: token,
             },
           createdAt: createdAt,
         }

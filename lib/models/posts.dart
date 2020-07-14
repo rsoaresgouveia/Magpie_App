@@ -1,46 +1,26 @@
-// id: ID
-// title: String
-// text: String
-// author: User
-// createdAt: String
 import 'package:flutter/material.dart';
+import './user.dart';
 
 class Posts {
-  dynamic id;
+  String id;
   String title;
   String text;
-  String author;
+  String authorName;
+  String authorUser;
   String createdAt;
 
   Posts(
-      {id,
-      @required title,
-      @required text,
-      @required author,
-      @required createdAt}) {
+      {String id,
+      String title,
+      String text,
+      String authorName,
+      String authorUser,
+      String createdAt}) {
     this.id = id;
     this.title = title;
-    this.title = text;
-    this.title = author;
-    this.title = createdAt;
-  }
-  getId() {
-    return this.id;
-  }
-
-  getName() {
-    return this.title;
-  }
-
-  getEmail() {
-    return this.text;
-  }
-
-  getUsername() {
-    return this.author;
-  }
-
-  getPassword() {
-    return this.createdAt;
+    this.text = text;
+    this.authorName = authorName;
+    this.authorUser = authorUser;
+    this.createdAt = createdAt;
   }
 }
