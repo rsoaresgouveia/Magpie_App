@@ -7,9 +7,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:magpie_App/main.dart';
 import 'package:magpie_App/postsList.dart';
 import './models/user.dart';
-import './services/graphQLConf.dart';
 import './services/mutations.dart';
-import './services/queries.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -184,19 +182,10 @@ class _LoginState extends State<Login> {
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
               middle: Text('Magpie App'),
-              trailing: Row(
-                  //mainAxisAlignment: MainAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    GestureDetector(
-                      child: Icon(CupertinoIcons.add),
-                      onTap: () => null,
-                    )
-                  ]),
-              backgroundColor: CupertinoTheme.of(context).primaryColor,
             ),
             resizeToAvoidBottomInset: true,
             child: SingleChildScrollView(
+              padding: EdgeInsets.only(top: 30),
               child: Column(
                 children: <Widget>[
                   Container(

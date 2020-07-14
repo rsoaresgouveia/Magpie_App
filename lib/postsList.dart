@@ -64,7 +64,48 @@ class _PostsListState extends State<PostsList> {
     Platform.isAndroid
         ? showMaterialModalBottomSheet(
             context: context,
-            builder: (context, scrollController) => Container(),
+            builder: (context, scrollController) => Container(
+              height: 250,
+              padding: EdgeInsets.all(10),
+              child: Column(children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(230, 230, 230, 1),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                  ),
+                  child: TextField(
+                    maxLines: 1,
+                    controller: titleC,
+                    decoration: InputDecoration(
+                      labelText: 'Titulo da postagem',
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 5,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      color: Color.fromRGBO(230, 230, 230, 1),
+                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                  child: TextField(
+                    maxLines: 5,
+                    controller: textC,
+                    decoration: InputDecoration(
+                      labelText: 'Postagem',
+                    ),
+                  ),
+                ),
+                FlatButton(
+                  onPressed: () => {
+                    addPost(titleC, textC, widget.arguments),
+                  },
+                  child: Text('Add Postagem'),
+                ),
+              ]),
+            ),
           )
         : showCupertinoModalBottomSheet(
             context: ctx,
@@ -114,7 +155,6 @@ class _PostsListState extends State<PostsList> {
                       ),
                       onPressed: () => {
                             addPost(titleC, textC, widget.arguments),
-                            //onRefresh(),
                           }),
                 ],
               ),
@@ -214,6 +254,7 @@ class _PostsListState extends State<PostsList> {
             ),
             builder: (QueryResult result,
                 {VoidCallback refetch, FetchMore fetchMore}) {
+              refetchQuery = refetch;
               return CupertinoPageScaffold(
                 navigationBar: CupertinoNavigationBar(
                   middle: Text('Feed'),

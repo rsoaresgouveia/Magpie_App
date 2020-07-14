@@ -27,9 +27,6 @@ class MyApp extends StatelessWidget {
         ? CupertinoApp(
             title: 'Magpie App',
             debugShowCheckedModeBanner: false,
-            theme: CupertinoThemeData(
-              primaryColor: CupertinoColors.activeBlue,
-            ),
             home: Login(),
             routes: <String, WidgetBuilder>{
               '/login': (BuildContext context) => new Login(),
